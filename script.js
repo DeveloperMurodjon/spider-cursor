@@ -26,34 +26,31 @@ function createStars(count) {
 
 // O'rgimchak klassi
 class Spider {
-  constructor() {
+  constructor(speed) {
     this.x = Math.random() * canvas.width;
     this.y = Math.random() * canvas.height;
-    this.angle = 0;
-    this.size = 2; // O'rgimchak o'lchamini 2 ga kamaytirdik
+    this.size = 2; // O'rgimchak o'lchami
+    this.speed = speed; // O'rgimchakning tezligi
   }
 
-  follow(targetX, targetY) {
+  update(targetX, targetY) {
     const dx = targetX - this.x;
     const dy = targetY - this.y;
-    this.angle = Math.atan2(dy, dx);
-    this.x += Math.cos(this.angle) * 1.5; // Harakat tezligini o'zgartirish
-    this.y += Math.sin(this.angle) * 1.5;
+    const angle = Math.atan2(dy, dx); // Kursor tomoni burchakini hisoblash
 
-    // Yulduzlarga tirmashish effektini qo'shamiz
-    this.y += Math.sin(this.x * 0.1) * 0.5; // X harakati bo'yicha tirmashadi
-    this.x += Math.cos(this.angle) * 0.2; // Harakatni moslashtirish
+    // O'rgimchakni harakatlantirish
+    this.x += Math.cos(angle) * this.speed;
+    this.y += Math.sin(angle) * this.speed;
   }
 
   draw() {
     ctx.save();
     ctx.translate(this.x, this.y);
-    ctx.rotate(this.angle);
 
-    // O'rgimchakning tanasi - oq simbiot ko'rinishi
+    // O'rgimchakning tanasi
     ctx.beginPath();
-    ctx.arc(0, 0, this.size, 0, Math.PI * 2); // Simbiot ko'rinishi uchun doira
-    ctx.fillStyle = "rgba(255, 255, 255, 0.8)"; // Oq rang, biroz shaffof
+    ctx.arc(0, 0, this.size, 0, Math.PI * 2); // Oq simbiot ko'rinishi
+    ctx.fillStyle = "rgba(255, 255, 255, 0.8)"; // Oq rang
     ctx.fill();
     ctx.strokeStyle = "white"; // O'rgimchakning qirralari oq rangda
     ctx.lineWidth = 2;
@@ -64,35 +61,42 @@ class Spider {
 }
 
 // O'rgimchaklarni yaratish uchun funksiya
-const spiders = createSpiders(5); // 5 ta o'rgimchak yaratiladi
+const spiders = createSpiders(2); // 2 ta o'rgimchak yaratiladi
 
 function createSpiders(count) {
   const arr = [];
-  for (let i = 0; i < count; i++) {
-    arr.push(new Spider());
-  }
+  // Har bir o'rgimchak uchun tezlikni belgilash
+  arr.push(new Spider(1.5)); // 1.5 tezlikda birinchi o'rgimchak
+  arr.push(new Spider(2.5)); // 2.5 tezlikda ikkinchi o'rgimchak
   return arr;
 }
-
-// Kursorni kuzatish uchun harakatlarni ishlovchi funksiya
-document.addEventListener("pointermove", (e) => {
-  spiders.forEach((spider) => spider.follow(e.clientX, e.clientY));
-});
 
 // Yulduzlarni chizish funksiyasi
 function drawStars() {
   stars.forEach((star) => {
     ctx.fillStyle = "white";
-    ctx.fillRect(star.x, star.y, 2, 2); // Yulduz o'lchamini o'zgartiring
+    ctx.fillRect(star.x, star.y, 2, 2); // Yulduz o'lchami
   });
 }
+
+// Kursor harakati bilan o'rgimchaklarni kuzatish
+let cursorX = canvas.width / 2; // Kursorning boshlang'ich X koordinatasi
+let cursorY = canvas.height / 2; // Kursorning boshlang'ich Y koordinatasi
+
+document.addEventListener("pointermove", (e) => {
+  cursorX = e.clientX;
+  cursorY = e.clientY;
+});
 
 // Animatsiya funksiyasi
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   drawStars(); // Yulduzlarni chizish
-  spiders.forEach((spider) => spider.draw());
+  spiders.forEach((spider) => {
+    spider.update(cursorX, cursorY); // Harakat qilish
+    spider.draw(); // Chizish
+  });
 
   requestAnimationFrame(animate);
 }
