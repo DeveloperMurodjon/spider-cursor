@@ -6,9 +6,21 @@
 
 body {
   overflow: hidden;
-  background-color: black;
+  background-color: black; /* Orqa fon rangini qora qilib belgiladik */
 }
 
 canvas {
   display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Yulduzlar uchun */
+.star {
+  position: absolute;
+  background-color: white;
+  border-radius: 50%;
+  width: 2px; /* Yulduz o'lchami */
+  height: 2px; /* Yulduz o'lchami */
 }
