@@ -24,10 +24,44 @@ function createStars(count) {
   return arr;
 }
 
-// Kursorni kuzatish uchun harakatlarni ishlovchi funksiya
-document.addEventListener("pointermove", (e) => {
-  spiders.forEach((spider) => spider.follow(e.clientX, e.clientY));
-});
+// O'rgimchak klassi
+class Spider {
+  constructor() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.angle = 0;
+    this.size = 2; // O'rgimchak o'lchamini 2 ga kamaytirdik
+  }
+
+  follow(targetX, targetY) {
+    const dx = targetX - this.x;
+    const dy = targetY - this.y;
+    this.angle = Math.atan2(dy, dx);
+    this.x += Math.cos(this.angle) * 1.5; // Harakat tezligini o'zgartirish
+    this.y += Math.sin(this.angle) * 1.5;
+
+    // Yulduzlarga tirmashish effektini qo'shamiz
+    this.y += Math.sin(this.x * 0.1) * 0.5; // X harakati bo'yicha tirmashadi
+    this.x += Math.cos(this.angle) * 0.2; // Harakatni moslashtirish
+  }
+
+  draw() {
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.angle);
+
+    // O'rgimchakning tanasi - oq simbiot ko'rinishi
+    ctx.beginPath();
+    ctx.arc(0, 0, this.size, 0, Math.PI * 2); // Simbiot ko'rinishi uchun doira
+    ctx.fillStyle = "rgba(255, 255, 255, 0.8)"; // Oq rang, biroz shaffof
+    ctx.fill();
+    ctx.strokeStyle = "white"; // O'rgimchakning qirralari oq rangda
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.restore();
+  }
+}
 
 // O'rgimchaklarni yaratish uchun funksiya
 const spiders = createSpiders(5); // 5 ta o'rgimchak yaratiladi
@@ -40,41 +74,10 @@ function createSpiders(count) {
   return arr;
 }
 
-// O'rgimchak klassi
-class Spider {
-  constructor() {
-    this.x = Math.random() * canvas.width;
-    this.y = Math.random() * canvas.height;
-    this.angle = 0;
-    this.size = 5; // O'rgimchak o'lchamini o'zgartiring
-  }
-
-  follow(targetX, targetY) {
-    const dx = targetX - this.x;
-    const dy = targetY - this.y;
-    this.angle = Math.atan2(dy, dx);
-    this.x += Math.cos(this.angle) * 1.5; // Harakat tezligini o'zgartirish
-    this.y += Math.sin(this.angle) * 1.5;
-  }
-
-  draw() {
-    ctx.save();
-    ctx.translate(this.x, this.y);
-    ctx.rotate(this.angle);
-
-    // O'rgimchakning tanasi
-    ctx.beginPath();
-    ctx.moveTo(-this.size, -this.size);
-    ctx.lineTo(this.size, this.size);
-    ctx.moveTo(-this.size, this.size);
-    ctx.lineTo(this.size, -this.size);
-    ctx.strokeStyle = "white"; // O'rgimchak rangini oq qilib belgiladik
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    ctx.restore();
-  }
-}
+// Kursorni kuzatish uchun harakatlarni ishlovchi funksiya
+document.addEventListener("pointermove", (e) => {
+  spiders.forEach((spider) => spider.follow(e.clientX, e.clientY));
+});
 
 // Yulduzlarni chizish funksiyasi
 function drawStars() {
